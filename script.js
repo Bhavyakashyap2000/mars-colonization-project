@@ -1,12 +1,11 @@
-var totalRows = 25;
-var totalCols = 40;
+var allrows = 25;
+var allcolumns = 40;
 var inProgress = false;
 //var initialMessage = "Click or drag cells to build walls! Press start when you finish and have selected an algorithm!";
 var cellsToAnimate = [];
 var createWalls = false;
 var algorithm = null;
 var justFinished = false;
-var animationSpeed = "Fast";
 var animationState = null;
 var startCell = [11, 15];
 var endCell = [11, 25];
@@ -26,7 +25,7 @@ function generateGrid( rows, cols ) {
     return grid;
 }
 
-var myGrid = generateGrid( totalRows, totalCols);
+var myGrid = generateGrid( allrows, allcolumns);
 $( "#tableContainer" ).append( myGrid );
 
 /* --------------------------- */
@@ -124,8 +123,8 @@ function minHeap() {
 
 $( "td" ).mousedown(function(){
 	var index = $( "td" ).index( this );
-	var startCellIndex = (startCell[0] * (totalCols)) + startCell[1];
-	var endCellIndex = (endCell[0] * (totalCols)) + endCell[1];
+	var startCellIndex = (startCell[0] * (allcolumns)) + startCell[1];
+	var endCellIndex = (endCell[0] * (allcolumns)) + endCell[1];
 	if ( !inProgress ){
 		// Clear board if just finished
 		if ( justFinished  && !inProgress ){ 
@@ -153,8 +152,8 @@ $( "td" ).mouseup(function(){
 $( "td" ).mouseenter(function() {
 	if (!createWalls && !movingStart && !movingEnd){ return; }
     var index = $( "td" ).index( this );
-    var startCellIndex = (startCell[0] * (totalCols)) + startCell[1];
-	var endCellIndex = (endCell[0] * (totalCols)) + endCell[1];
+    var startCellIndex = (startCell[0] * (allcolumns)) + startCell[1];
+	var endCellIndex = (endCell[0] * (allcolumns)) + endCell[1];
     if (!inProgress){
     	if (justFinished){ 
     		clearBoard( keepWalls = true );
@@ -173,8 +172,8 @@ $( "td" ).mouseenter(function() {
 
 $( "td" ).click(function() {
     var index = $( "td" ).index( this );
-    var startCellIndex = (startCell[0] * (totalCols)) + startCell[1];
-	var endCellIndex = (endCell[0] * (totalCols)) + endCell[1];
+    var startCellIndex = (startCell[0] * (allcolumns)) + startCell[1];
+	var endCellIndex = (endCell[0] * (allcolumns)) + endCell[1];
     if ((inProgress == false) && !(index == startCellIndex) && !(index == endCellIndex)){
     	if ( justFinished ){ 
     		clearBoard( keepWalls = true );
@@ -217,12 +216,6 @@ $( "#algorithms .dropdown-item").click(function(){
 	console.log("Algorithm has been changd to: " + algorithm);
 });
 
-$( "#speed .dropdown-item").click(function(){
-	if ( inProgress ){ update("wait"); return; }
-	animationSpeed = $(this).text();
-	updateSpeedDisplay();
-	console.log("Speed has been changd to: " + animationSpeed);
-});
 
 $( "#mazes .dropdown-item").click(function(){
 	if ( inProgress ){ update("wait"); return; }
@@ -231,12 +224,6 @@ $( "#mazes .dropdown-item").click(function(){
 		randomMaze();
 	} else if (maze == "Recursive Division"){
 		recursiveDivMaze(null);
-	} else if (maze == "Recursive Division (Vertical Skew)"){
-		recursiveDivMaze("VERTICAL");
-	} else if (maze == "Recursive Division (Horizontal Skew)"){
-		recursiveDivMaze("HORIZONTAL");
-	} else if (maze == "Simple Spiral"){
-		spiralMaze();
 	}
 	console.log("Maze has been changd to: " + maze);
 });
@@ -246,8 +233,8 @@ $( "#mazes .dropdown-item").click(function(){
 /* ----------------- */
 
 function moveStartOrEnd(prevIndex, newIndex, startOrEnd){
-	var newCellY = newIndex % totalCols;
-	var newCellX = Math.floor((newIndex - newCellY) / totalCols);
+	var newCellY = newIndex % allcolumns;
+	var newCellX = Math.floor((newIndex - newCellY) / allcolumns);
 	if (startOrEnd == "start"){
     	startCell = [newCellX, newCellY];
     	console.log("Moving start to [" + newCellX + ", " + newCellY + "]")
@@ -260,29 +247,20 @@ function moveStartOrEnd(prevIndex, newIndex, startOrEnd){
 }
 
 function moveEnd(prevIndex, newIndex){
-	// Erase last end cell
+	
 	$($("td").find(prevIndex)).removeClass();
 
 	var newEnd = $("td").find(newIndex);
 	$(newEnd).removeClass();
     $(newEnd).addClass("end");
 
-    var newEndX = Math.floor(newIndex / totalRows);
-	var newEndY = Math.floor(newIndex / totalCols);
+    var newEndX = Math.floor(newIndex / allrows);
+	var newEndY = Math.floor(newIndex / allcolumns);
     startCell = [newStartX, newStartY];
     return;
 }
 
-function updateSpeedDisplay(){
-	if (animationSpeed == "Slow"){
-		$(".speedDisplay").text("Speed: Slow");
-	} else if (animationSpeed == "Normal"){
-		$(".speedDisplay").text("Speed: Normal");
-	} else if (animationSpeed == "Fast"){
-		$(".speedDisplay").text("Speed: Fast");
-	}
-	return;
-}
+
 
 function updateStartBtnText(){
 	if (algorithm == "Depth-First Search (DFS)"){
@@ -301,7 +279,7 @@ function updateStartBtnText(){
 	return;
 }
 
-// Used to display error messages
+
 function update(message){
 	$("#resultsIcon").removeClass();
 	$("#resultsIcon").addClass("fas fa-exclamation");
@@ -312,7 +290,7 @@ function update(message){
 	}
 }
 
-// Used to display results
+
 function updateResults(duration, pathFound, length){
 	var firstAnimation = "swashOut";
 	var secondAnimation = "swashIn";
@@ -320,7 +298,7 @@ function updateResults(duration, pathFound, length){
     $("#results").addClass("magictime " + firstAnimation); 
     setTimeout(function(){ 
     	$("#resultsIcon").removeClass();
-    	//$("#results").css("height","80px");
+    	
     	if (pathFound){
     		$('#results').css("background-color", "#77dd77");
     		$("#resultsIcon").addClass("fas fa-check");
@@ -384,10 +362,10 @@ function executeAlgo(){
 function makeWall(cell){
 	if (!createWalls){return;}
     var index = $( "td" ).index( cell );
-    var row = Math.floor( ( index ) / totalRows) + 1;
-    var col = ( index % totalCols ) + 1;
+    var row = Math.floor( ( index ) / allrows) + 1;
+    var col = ( index % allcolumns ) + 1;
     console.log([row, col]);
-    if ((inProgress == false) && !(row == 1 && col == 1) && !(row == totalRows && col == totalCols)){
+    if ((inProgress == false) && !(row == 1 && col == 1) && !(row == allrows && col == allcolumns)){
     	$(cell).toggleClass("wall");
     }
 }
@@ -395,9 +373,9 @@ function makeWall(cell){
 function createVisited(){
 	var visited = [];
 	var cells = $("#tableContainer").find("td");
-	for (var i = 0; i < totalRows; i++){
+	for (var i = 0; i < allrows; i++){
 		var row = [];
-		for (var j = 0; j < totalCols; j++){
+		for (var j = 0; j < allcolumns; j++){
 			if (cellIsAWall(i, j, cells)){
 				row.push(true);
 			} else {
@@ -410,36 +388,11 @@ function createVisited(){
 }
 
 function cellIsAWall(i, j, cells){
-	var cellNum = (i * (totalCols)) + j;
+	var cellNum = (i * (allcolumns)) + j;
 	return $(cells[cellNum]).hasClass("wall");
 }
 
-// Make it iterable?
-function DFS(i, j, visited){
-	if (i == endCell[0] && j == endCell[1]){
-		cellsToAnimate.push( [[i, j], "success"] );
-		return true;
-	}
-	visited[i][j] = true;
-	cellsToAnimate.push( [[i, j], "searching"] );
-	var neighbors = getNeighbors(i, j);
-	for(var k = 0; k < neighbors.length; k++){
-		var m = neighbors[k][0];
-		var n = neighbors[k][1]; 
-		if ( !visited[m][n] ){
-			var pathFound = DFS(m, n, visited);
-			if ( pathFound ){
-				cellsToAnimate.push( [[i, j], "success"] );
-				return true;
-			} 
-		}
-	}
-	cellsToAnimate.push( [[i, j], "visited"] );
-	return false;
-}
 
-
-// NEED TO REFACTOR AND MAKE LESS LONG
 function BFS(){
 	var pathFound = false;
 	var myQueue = new Queue();
@@ -617,195 +570,6 @@ function AStar() {
 	return pathFound;
 }
 
-function jumpPointSearch() {
-	var pathFound = false;
-	var myHeap = new minHeap();
-	var prev = createPrev();
-	var distances = createDistances();
-	var costs = createDistances();
-	var visited = createVisited();
-	var walls = createVisited();
-	distances[ startCell[0] ][ startCell[1] ] = 0;
-	costs[ startCell[0] ][ startCell[1] ] = 0;
-	myHeap.push([0, [startCell[0], startCell[1]]]);
-	cellsToAnimate.push([[startCell[0], startCell[1]], "searching"]);
-	while (!myHeap.isEmpty()){
-		var cell = myHeap.getMin();
-		var i = cell[1][0];
-		var j = cell[1][1];
-		if (visited[i][j]){ continue; }
-		visited[i][j] = true;
-		cellsToAnimate.push([[i, j], "visited"]);
-		if (i == endCell[0] && j == endCell[1]){
-			pathFound = true;
-			break;
-		}
-		var neighbors = pruneNeighbors(i, j, visited, walls);
-		for (var k = 0; k < neighbors.length; k++){
-			var m = neighbors[k][0];
-			var n = neighbors[k][1];
-			if (visited[m][n]){ continue; }
-			var newDistance = distances[i][j] + Math.abs(i - m) + Math.abs(j - n);
-			if (newDistance < distances[m][n]){
-				distances[m][n] = newDistance;
-				prev[m][n] = [i, j];
-				cellsToAnimate.push( [[m, n], "searching"] );
-			}
-			var newCost = distances[i][j] + Math.abs(endCell[0] - m) + Math.abs(endCell[1] - n);
-			if (newCost < costs[m][n]){
-				costs[m][n] = newCost;
-				myHeap.push([newCost, [m, n]]);
-			}
-		}
-	}
-	// Make any nodes still in the heap "visited"
-	while ( !myHeap.isEmpty() ){
-		var cell = myHeap.getMin();
-		var i = cell[1][0];
-		var j = cell[1][1];
-		if (visited[i][j]){ continue; }
-		visited[i][j] = true;
-		cellsToAnimate.push( [[i, j], "visited"] );
-	}
-	// If a path was found, illuminate it:
-	if (pathFound) {
-		var i = endCell[0];
-		var j = endCell[1];
-		cellsToAnimate.push( [endCell, "success"] );
-		while (prev[i][j] != null){
-			var prevCell = prev[i][j];
-			x = prevCell[0];
-			y = prevCell[1];
-			// Loop through and illuminate each cell in between [i, j] and [x, y]
-			// Horizontal
-			if ((i - x) == 0){
-				// Move right
-				if (j < y){
-					for (var k = j; k < y; k++){
-						cellsToAnimate.push( [[i, k], "success"] );
-					}
-				// Move left
-				} else {
-					for (var k = j; k > y; k--){
-						cellsToAnimate.push( [[i, k], "success"] );
-					}
-				}
-			// Vertical
-			} else {
-				// Move down
-				if (i < x){
-					for (var k = i; k < x; k++){
-						cellsToAnimate.push( [[k, j], "success"] );
-					}
-				// Move up
-				} else {
-					for (var k = i; k > x; k--){
-						cellsToAnimate.push( [[k, j], "success"] );
-					}
-				}
-			}
-			i = prevCell[0];
-			j = prevCell[1];
-			cellsToAnimate.push( [[i, j], "success"] );
-		}
-	}
-	return pathFound;
-}
-
-function pruneNeighbors(i, j, visited, walls){
-	var neighbors = [];
-	var stored = {};
-	// Scan horizontally
-	for (var num = 0; num < 2; num++){
-		if (!num){
-			var direction = "right";
-			var increment = 1;
-		} else {
-			var direction = "left";
-			var increment = -1;
-		}
-		for (var c = j + increment; (c < totalCols) && (c >= 0); c += increment){
-			var xy = i + "-" + c;
-			if (visited[i][c]){	break; }
-			//Check if same row or column as end cell
-			if ((endCell[0] == i || endCell[1] == c) && !stored[xy]){
-				neighbors.push([i, c]);
-				stored[xy] = true;
-				continue;
-			}
-			// Check if dead end
-			var deadEnd = !(xy in stored) && ((direction == "left" && (c > 0) && walls[i][c - 1]) || (direction == "right" && c < (totalCols - 1) && walls[i][c + 1]) || (c == totalCols - 1) || (c == 0));  
-			if (deadEnd){
-				neighbors.push([i, c]);
-				stored[xy] = true;
-				break;
-			}
-			//Check for forced neighbors
-			var validForcedNeighbor = (direction == "right" && c < (totalCols - 1) && (!walls[i][c + 1])) || (direction == "left" && (c > 0) && (!walls[i][c - 1]));
-			if (validForcedNeighbor){
-				checkForcedNeighbor(i, c, direction, neighbors, walls, stored);
-			}
-		}
-	}
-	// Scan vertically
-	for (var num = 0; num < 2; num++){
-		if (!num){
-			var direction = "down";
-			var increment = 1;
-		} else {
-			var direction = "up";
-			var increment = -1;
-		}
-		for (var r = i + increment; (r < totalRows) && (r >= 0); r += increment){
-			var xy = r + "-" + j;
-			if (visited[r][j]){	break; }
-			if ((endCell[0] == r || endCell[1] == j) && !stored[xy]){
-				neighbors.push([r, j]);
-				stored[xy] = true;
-				continue;
-			}
-			// Check if dead end
-			var deadEnd = !(xy in stored) && ((direction == "up" && (r > 0) && walls[r - 1][j]) || (direction == "down" && r < (totalRows - 1) && walls[r + 1][j]) || (r == totalRows - 1) || (r == 0));  
-			if (deadEnd){
-				neighbors.push([r, j]);
-				stored[xy] = true;
-				break;
-			}
-			//Check for forced neighbors
-			var validForcedNeighbor = (direction == "down" && (r < (totalRows - 1)) && (!walls[r + 1][j])) || (direction == "up" && (r > 0) && (!walls[r - 1][j]));
-			if (validForcedNeighbor){
-				checkForcedNeighbor(r, j, direction, neighbors, walls, stored);
-			}
-		}
-	}
-	return neighbors;
-}
-
-function checkForcedNeighbor(i, j, direction, neighbors, walls, stored){
-	//console.log(JSON.stringify(walls));
-	if (direction == "right"){
-		var isForcedNeighbor = ((i > 0) && walls[i - 1][j] && (!walls[i - 1][j + 1])) || ((i < (totalRows - 1)) &&  walls[i + 1][j] && (!walls[i + 1][j + 1]));
-		var neighbor = [i, j + 1];
-	} else if (direction == "left"){
-		var isForcedNeighbor = ((i > 0) && walls[i - 1][j] && !walls[i - 1][j - 1]) || ((i < (totalRows - 1)) && walls[i + 1][j] && !walls[i + 1][j - 1]);
-		var neighbor = [i, j - 1];
-	} else if (direction == "up"){
-		var isForcedNeighbor = ((j < (totalCols - 1)) && walls[i][j + 1] && !walls[i - 1][j + 1]) || ((j > 0) && walls[i][j - 1] && !walls[i - 1][j - 1]);
-		var neighbor = [i - 1, j];
-	} else {
-		var isForcedNeighbor = ((j < (totalCols - 1)) && walls[i][j + 1] && !walls[i + 1][j + 1]) || ((j > 0) && walls[i][j - 1] && !walls[i + 1][j - 1]);
-		var neighbor = [i + 1, j];
-	}
-	var xy = neighbor[0] + "-" + neighbor[1];
-	if (isForcedNeighbor && !stored[xy]){
-		//console.log("Neighbor " + JSON.stringify(neighbor) + " is forced! Adding to neighbors and stored.")
-		neighbors.push(neighbor);
-		stored[xy] = true;
-	} else {
-		//console.log("Is not a forced neighbor..");
-	}
-	//return;
-}
 
 function greedyBestFirstSearch() {
 	var pathFound = false;
@@ -841,7 +605,7 @@ function greedyBestFirstSearch() {
 			}
 		}
 	}
-	// Make any nodes still in the heap "visited"
+	
 	while ( !myHeap.isEmpty() ){
 		var cell = myHeap.getMin();
 		var i = cell[1][0];
@@ -891,11 +655,11 @@ async function randomMaze(){
 			cells.push([i, j]);
 		}
 	}
-	//Animate cells
+	
 	var cells = $("#tableContainer").find("td");
-	for (var i = 0; i < totalRows; i++){
-		for (var j = 0; j < totalCols; j++){
-			if (i == 0 || i == (totalRows - 1) || j == 0 || j == (totalCols - 1) || walls[i][j]){ 
+	for (var i = 0; i < allrows; i++){
+		for (var j = 0; j < allcolumns; j++){
+			if (i == 0 || i == (allrows - 1) || j == 0 || j == (allcolumns - 1) || walls[i][j]){ 
 				cellsToAnimate.push([ [i, j], "wall"]); 
 			}
 		}
@@ -905,38 +669,9 @@ async function randomMaze(){
 	return;
 }
 
-async function spiralMaze(){
-	inProgress = true;
-	clearBoard(keepWalls = false);
-
-	var length = 1;
-	var direction = {
-		"0": [-1, 1],  //northeast
-		"1": [1, 1],   //southeast
-		"2": [1, -1],  //southwest
-		"3": [-1, -1], //northwest
-	};
-	var cell = [Math.floor(totalRows / 2), Math.floor(totalCols / 2)];
-	while (inBounds(cell)){
-		var i_increment = direction[length % 4][0];
-		var j_increment = direction[length % 4][1];
-		for (var count = 0; count < length; count++){
-			var i = cell[0];
-			var j = cell[1];
-			cellsToAnimate.push( [[i, j], "wall"] );
-			cell[0] += i_increment;
-			cell[1] += j_increment;
-			if (!inBounds(cell)){ break; }
-		}
-		length += 1;
-	}
-	await animateCells();
-	inProgress = false;
-	return;
-}
 
 function inBounds(cell){
-	return (cell[0] >= 0 && cell[1] >= 0 && cell[0] < totalRows && cell[1] < totalCols);
+	return (cell[0] >= 0 && cell[1] >= 0 && cell[0] < allrows && cell[1] < allcolumns);
 }
 
 async function recursiveDivMaze(bias){
@@ -944,9 +679,9 @@ async function recursiveDivMaze(bias){
 	clearBoard(keepWalls = false);
 
 	//Animate edge walls
-	for (var i = 0; i < totalRows; i++){
-		for (var j = 0; j < totalCols; j++){
-			if (i == 0 || j == 0 || i == (totalRows - 1) || j == (totalCols - 1)){ 
+	for (var i = 0; i < allrows; i++){
+		for (var j = 0; j < allcolumns; j++){
+			if (i == 0 || j == 0 || i == (allrows - 1) || j == (allcolumns - 1)){ 
 				cellsToAnimate.push([ [i, j], "wall"]); 
 			}
 		}
@@ -954,7 +689,7 @@ async function recursiveDivMaze(bias){
 
 	var walls = createVisited();
 	var passages = createVisited();
-	recursiveDivMazeHelper(1, (totalRows - 2), 1, (totalCols - 2), 2, (totalRows - 3), 2, (totalCols - 3), walls, passages, bias);
+	recursiveDivMazeHelper(1, (allrows - 2), 1, (allcolumns - 2), 2, (allrows - 3), 2, (allcolumns - 3), walls, passages, bias);
 	await animateCells();
 	inProgress = false;
 	return;
@@ -1036,9 +771,9 @@ function recursiveDivMazeHelper(iStart, iEnd, jStart, jEnd, horzStart, horzEnd, 
 
 function makeWalls(){
 	var walls = [];
-	for (var i = 0; i < totalRows; i++){
+	for (var i = 0; i < allrows; i++){
 		var row = [];
-		for (var j = 0; j < totalCols; j++){
+		for (var j = 0; j < allcolumns; j++){
 			row.push(true);
 		}
 		walls.push(row);
@@ -1058,9 +793,9 @@ function neighborsThatAreWalls( neighbors, walls ){
 
 function createDistances(){
 	var distances = [];
-	for (var i = 0; i < totalRows; i++){
+	for (var i = 0; i < allrows; i++){
 		var row = [];
-		for (var j = 0; j < totalCols; j++){
+		for (var j = 0; j < allcolumns; j++){
 			row.push(Number.POSITIVE_INFINITY);
 		}
 		distances.push(row);
@@ -1070,9 +805,9 @@ function createDistances(){
 
 function createPrev(){
 	var prev = [];
-	for (var i = 0; i < totalRows; i++){
+	for (var i = 0; i < allrows; i++){
 		var row = [];
-		for (var j = 0; j < totalCols; j++){
+		for (var j = 0; j < allcolumns; j++){
 			row.push(null);
 		}
 		prev.push(row);
@@ -1084,22 +819,22 @@ function getNeighbors(i, j){
 	var neighbors = [];
 	if ( i > 0 ){ neighbors.push( [i - 1, j] );}
 	if ( j > 0 ){ neighbors.push( [i, j - 1] );}
-	if ( i < (totalRows - 1) ){ neighbors.push( [i + 1, j] );}
-	if ( j < (totalCols - 1) ){ neighbors.push( [i, j + 1] );}
+	if ( i < (allrows - 1) ){ neighbors.push( [i + 1, j] );}
+	if ( j < (allcolumns - 1) ){ neighbors.push( [i, j + 1] );}
 	return neighbors;
 }
 
 async function animateCells(){
 	animationState = null;
 	var cells = $("#tableContainer").find("td");
-	var startCellIndex = (startCell[0] * (totalCols)) + startCell[1];
-	var endCellIndex = (endCell[0] * (totalCols)) + endCell[1];
+	var startCellIndex = (startCell[0] * (allcolumns)) + startCell[1];
+	var endCellIndex = (endCell[0] * (allcolumns)) + endCell[1];
 	var delay = getDelay();
 	for (var i = 0; i < cellsToAnimate.length; i++){
 		var cellCoordinates = cellsToAnimate[i][0];
 		var x = cellCoordinates[0];
 		var y = cellCoordinates[1];
-		var num = (x * (totalCols)) + y;
+		var num = (x * (allcolumns)) + y;
 		if (num == startCellIndex || num == endCellIndex){ continue; }
 		var cell = cells[num];
 		var colorClass = cellsToAnimate[i][1];
@@ -1114,54 +849,20 @@ async function animateCells(){
 	//console.log("End of animation has been reached!");
 	return new Promise(resolve => resolve(true));
 }
-/*
-async function flash(color){
-	var item = "#logo";
-	var originalColor = $(item).css("color");
-	if (color == "green"){
-		var colorRGB = '40,167,50';
-	} else if (color == "red"){
-		var colorRGB = '255,0,0';
-	}
-	var delay = 1; //ms
-	for (var i = 0.45; i <= 2.6; i += 0.01){
-    	$(item).css("color", 'rgba(' + colorRGB + ','+Math.abs(Math.sin(i))+')');
-		await new Promise(resolve => setTimeout(resolve, delay));
-	}
-	$(item).css("color", originalColor);
-	return new Promise(resolve => resolve(true));
-}
-*/
+
+
 
 function getDelay(){
 	var delay;
-	if (animationSpeed === "Slow"){
-		if (algorithm == "Depth-First Search (DFS)") {
-			delay = 25;
-		} else {
-			delay = 20;
-		}
-	} else if (animationSpeed === "Normal") {
-		if (algorithm == "Depth-First Search (DFS)") {
-			delay = 15;
-		} else {
-			delay = 10;
-		}
-	} else if (animationSpeed == "Fast") {
-		if (algorithm == "Depth-First Search (DFS)") {
-			delay = 10;
-		} else {
-			delay = 5;
-		}
-	}
-	console.log("Delay = " + delay);
+	delay = 5;
+	console.log("Delay= " + delay);
 	return delay;
 }
 
 function clearBoard( keepWalls ){
 	var cells = $("#tableContainer").find("td");
-	var startCellIndex = (startCell[0] * (totalCols)) + startCell[1];
-	var endCellIndex = (endCell[0] * (totalCols)) + endCell[1];
+	var startCellIndex = (startCell[0] * (allcolumns)) + startCell[1];
+	var endCellIndex = (endCell[0] * (allcolumns)) + endCell[1];
 	for (var i = 0; i < cells.length; i++){
 			isWall = $( cells[i] ).hasClass("wall");
 			$( cells[i] ).removeClass();
@@ -1175,7 +876,7 @@ function clearBoard( keepWalls ){
 	}
 }
 
-// Ending statements
+
 clearBoard();
 
 $('#myModal').on('shown.bs.modal', function () {
