@@ -1,2 +1,1 @@
-# mars-colonization-project
-my first github project
+A web browser which shows the shortest path between 2 points with the use of various graphs and AI algorithms. It also shows shortest path by various types of grids and mazes where we can add obstacles by our choice.It also tells the length of the shortest path and the time taken.
